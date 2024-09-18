@@ -17,5 +17,5 @@ poetry install
 ## Run
 
 ```bash
-poetry run uvicorn main:app --reload
+poetry run start
 ```
