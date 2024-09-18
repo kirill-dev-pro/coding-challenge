@@ -1,9 +1,9 @@
 from sqlalchemy import Boolean, Column, Integer, String
 
-from .database import Base
+from app.database import Base
 
 
-class Item(Base):
+class ItemModel(Base):
     __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)

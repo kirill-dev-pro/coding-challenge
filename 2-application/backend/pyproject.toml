@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "backend"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["Kirill <kirill.chuprov@cambri.io>"]
 readme = "README.md"
+
+[tool.poetry.scripts]
+start = "app.main:start"
 
 [tool.poetry.dependencies]
 python = "^3.08"
