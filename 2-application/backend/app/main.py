@@ -1,4 +1,5 @@
 import uvicorn
+from typing import List
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -30,7 +31,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items", response_model=list[Item])
+@app.get("/items", response_model=List[Item])
 def read_item(db=Depends(get_db)):
     items = db.query(ItemModel).all()
     if not items:
