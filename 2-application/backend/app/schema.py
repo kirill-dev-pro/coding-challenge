@@ -1,10 +1,18 @@
-from typing import Union
-
 from pydantic import BaseModel
+from datetime import datetime
 
 
-class Item(BaseModel):
+class OrderCreate(BaseModel):
+    user_id: int
+    product: str
+    quantity: int
+    total_price: float
+
+
+class OrderResponse(BaseModel):
     id: int
-    title: str
-    description: Union[str, None] = None
-    is_active: bool
+    user_id: int
+    product: str
+    quantity: int
+    total_price: float
+    order_date: datetime

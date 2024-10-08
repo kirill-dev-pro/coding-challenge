@@ -7,6 +7,7 @@ readme = "README.md"
 
 [tool.poetry.scripts]
 start = "app.main:start"
+insert-sample-data = "app.insert_sample_data:insert_sample_data"
 
 [tool.poetry.dependencies]
 python = "^3.08"

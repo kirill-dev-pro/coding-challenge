@@ -24,14 +24,8 @@ function App() {
   const [discountPercent, setDiscountPercent] = useState<number>(0);
   const [expensiveProducts, setExpensiveProducts] = useState<Order[]>([]);
 
-  // Bug 1: Memory leak in useEffect
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`${API_URL}/orders/${userId}`);
-      setOrders(response.data);
-    };
-    fetchData();
-    // Missing cleanup function
+    fetchOrders();
   }, [userId]);
 
   const fetchOrders = async () => {
@@ -49,23 +43,20 @@ function App() {
     }
   };
 
-  // Bug 2: Incorrect state update
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/orders/`, {
+      await axios.post(`${API_URL}/orders/`, {
         user_id: userId,
         product,
         quantity,
         total_price: price * quantity,
       });
-      // Incorrect state update: directly mutating state
-      orders.push(response.data);
-      setOrders(orders);
       setProduct("");
       setQuantity(1);
       setPrice(0);
       setError(null);
+      fetchOrders();
     } catch (error) {
       setError("Error creating order. Please try again.");
       console.error(
@@ -91,7 +82,6 @@ function App() {
     }
   };
 
-  // Bug 3: Race condition in batch order creation
   const handleBatchOrder = async () => {
     try {
       const batchOrders = Array(5)
@@ -102,9 +92,7 @@ function App() {
           quantity: Math.floor(Math.random() * 10) + 1,
           total_price: Math.random() * 100,
         }));
-      batchOrders.forEach(async (order) => {
-        await axios.post(`${API_URL}/orders/`, order);
-      });
+      await axios.post(`${API_URL}/orders/batch`, batchOrders);
       setError(null);
       fetchOrders();
     } catch (error) {
@@ -174,7 +162,6 @@ function App() {
     }
   };
 
-  // Bug 4: Incorrect error handling
   const handleDiscountedOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -192,18 +179,13 @@ function App() {
       setError(null);
       fetchOrders();
     } catch (error) {
-      // Incorrect error handling: not setting error state
+      setError("Error creating discounted order. Please try again.");
       console.error(
         "Error creating discounted order:",
         error instanceof Error ? error.message : String(error)
       );
     }
   };
-
-  // Bug 5: Infinite loop in useEffect
-  useEffect(() => {
-    fetchUserOrders();
-  });
 
   const fetchUserOrders = async () => {
     try {
@@ -442,7 +424,7 @@ function App() {
 
         <div className="mt-8 p-4 bg-yellow-100 rounded-lg">
           <h3 className="text-lg font-semibold flex items-center">
-            <AlertTriangle className="mr-2" /> Warning: Buggy Application
+            <AlertTriangle className="mr-2" /> Warning: Buggy Endpoints
           </h3>
           <p className="mt-2">
             This application contains intentional bugs for demonstration
