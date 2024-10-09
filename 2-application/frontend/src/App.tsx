@@ -24,14 +24,12 @@ function App() {
   const [discountPercent, setDiscountPercent] = useState<number>(0);
   const [expensiveProducts, setExpensiveProducts] = useState<Order[]>([]);
 
-  // Bug 1: Memory leak in useEffect
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`${API_URL}/orders/${userId}`);
       setOrders(response.data);
     };
     fetchData();
-    // Missing cleanup function
   }, [userId]);
 
   const fetchOrders = async () => {
@@ -49,7 +47,6 @@ function App() {
     }
   };
 
-  // Bug 2: Incorrect state update
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -59,7 +56,7 @@ function App() {
         quantity,
         total_price: price * quantity,
       });
-      // Incorrect state update: directly mutating state
+
       orders.push(response.data);
       setOrders(orders);
       setProduct("");
@@ -91,7 +88,6 @@ function App() {
     }
   };
 
-  // Bug 3: Race condition in batch order creation
   const handleBatchOrder = async () => {
     try {
       const batchOrders = Array(5)
@@ -174,7 +170,6 @@ function App() {
     }
   };
 
-  // Bug 4: Incorrect error handling
   const handleDiscountedOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -200,7 +195,6 @@ function App() {
     }
   };
 
-  // Bug 5: Infinite loop in useEffect
   useEffect(() => {
     fetchUserOrders();
   });
