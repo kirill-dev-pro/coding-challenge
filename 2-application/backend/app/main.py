@@ -3,12 +3,53 @@ from typing import List
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.database import SessionLocal
-from app.schema import OrderCreate, OrderResponse
-from app.models import Order
-
 from sqlalchemy.orm import Session
 import asyncio
+
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from datetime import datetime
+from pydantic import BaseModel
+
+# Database
+SQLALCHEMY_DATABASE_URL = "sqlite:///./db.sqlite"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+
+# Database model
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, index=True)
+    product = Column(String, index=True)
+    quantity = Column(Integer)
+    total_price = Column(Float)
+    order_date = Column(DateTime, default=datetime.utcnow)
+
+
+# Pydantic models for response and request bodies
+class OrderCreate(BaseModel):
+    user_id: int
+    product: str
+    quantity: int
+    total_price: float
+
+
+class OrderResponse(BaseModel):
+    id: int
+    user_id: int
+    product: str
+    quantity: int
+    total_price: float
+    order_date: datetime
+
+
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
